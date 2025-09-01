@@ -87,12 +87,68 @@ top100 = youtube_unique.sort_values("views", ascending=False).head(100)
 share_collab = (top100["is_collaboration"].mean()*100)
 print(f"\n% Collaborations in Top 100 (deduped): {share_collab:.1f}%")
 
+# 4) The Correlation
+yt_corr = youtube_unique[['views','danceability','energy','valence','tempo']].corr()
+print(yt_corr)
 
+#Figure to see the correlation
+plt.figure(figsize=(8,6))
+sns.heatmap(yt_corr, annot=True, cmap="coolwarm")
+plt.title("Correlation: YouTube Views vs Audio Features")
+plt.show()
 
+# 5) Happy Vs Sad Songs
+# %% Happy vs Sad Songs on YouTube
 
+# thresholds
+happy_threshold = 0.7
+sad_threshold   = 0.3
 
+# classify songs by valence
+youtube_unique['mood'] = pd.cut(
+    youtube_unique['valence'],
+    bins=[-0.01, sad_threshold, happy_threshold, 1.01],
+    labels=['Sad','Neutral','Happy']
+)
 
-#2. Engagement ratio
-#print("Engagement ratio:")
-#df['engagement_ratio'] = (df['likes'] + df['comments']) / df['views']
-#print(df_unique[['track','artist','engagement_ratio']].sort_values('engagement_ratio', ascending=False).head(10))
+# 5.1) distribution
+print("Song distribution by mood:")
+print(youtube_unique['mood'].value_counts())
+
+# 5.2) average views
+avg_views_mood = youtube_unique.groupby('mood')['views'].mean().sort_values(ascending=False)
+print("\nAverage Views by Mood:")
+print(avg_views_mood)
+
+# 5.3) total views
+tot_views_mood = youtube_unique.groupby('mood')['views'].sum().sort_values(ascending=False)
+print("\nTotal Views by Mood:")
+print(tot_views_mood)
+
+# 5.4) top 10 happy songs
+top_happy = youtube_unique[youtube_unique['mood']=='Happy'] \
+    .sort_values('views', ascending=False).head(10)
+print("\nTop 10 Happy Songs on YouTube:")
+print(top_happy[['artist','track','valence','views']])
+
+# 5.5) top 10 sad songs
+top_sad = youtube_unique[youtube_unique['mood']=='Sad'] \
+    .sort_values('views', ascending=False).head(10)
+print("\nTop 10 Sad Songs on YouTube:")
+print(top_sad[['artist','track','valence','views']])
+
+# 6) Engagement ratio
+
+# Filter out videos with very low views
+filtered_youtube = youtube_unique[youtube_unique['views'] > 1e5]   # keep only >100,000 views
+
+# Recalculate top 10 engagement ratio
+top_engagement = (
+    filtered_youtube[['track','artist','views','likes','comments']]
+    .assign(engagement_ratio=(filtered_youtube['likes'] + filtered_youtube['comments']) / filtered_youtube['views'])
+    .sort_values('engagement_ratio', ascending=False)
+    .head(10)
+)
+
+print("Engagement ratio:")
+print(top_engagement)

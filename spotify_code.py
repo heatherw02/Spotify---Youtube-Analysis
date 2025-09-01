@@ -15,22 +15,6 @@ df.describe()        # summary stats for numerics
 
 #Cleaning Data
 df.columns = df.columns.str.lower().str.strip().str.replace(" ", "_") #standardize (lowercase, underscores)
-df = df.drop_duplicates() #Gets rid of duplicates
-df.isnull().sum() #Checks for missing values
-
-#Spotify Analysis
-
-#1. Top 10 most popular tracks
-top_songs1 = df[["track", "artist", "stream"]].dropna()
-print("Spotify Top 10 Songs: ")
-print(top_songs1.sort_values("stream", ascending=False).head(10))
-
-#2. Top Artist based on the sum of the stream of all their songs
-top_artist1 = df.groupby('artist')['stream'].sum().sort_values(ascending=False).head(10)
-print("Spotify Top 10 Artists: ")
-print(top_artist1)
-
-#3. Top Collaborations Vs Solo Artists
 
 # Define collaboration markers
 artist_markers = r"&|,"          # multiple credited artists in the artist field
@@ -80,7 +64,21 @@ df_unique = pd.concat([solo_unique[["artist","track","stream","is_collaboration"
                        collab_unique[["artist","track","stream","is_collaboration"]]],
                       ignore_index=True)
 
-# %% DISPLAY Comparison: Solo vs Collaboration
+#Spotify Analysis
+
+#1. Top 10 most popular tracks
+top_songs1 = df_unique[["track", "artist", "stream"]].dropna()
+print("Spotify Top 10 Songs: ")
+print(top_songs1.sort_values("stream", ascending=False).head(10))
+
+#2. Top Artist based on the sum of the stream of all their songs
+top_artist1 = df.groupby('artist')['stream'].sum().sort_values(ascending=False).head(10)
+print("Spotify Top 10 Artists: ")
+print(top_artist1)
+
+#3. Top Collaborations Vs Solo Artists
+
+#3.1) The Avg and Total
 totals = df_unique.groupby("is_collaboration")["stream"].sum().rename({False:"Solo", True:"Collab"})
 avgs   = df_unique.groupby("is_collaboration")["stream"].mean().rename({False:"Solo", True:"Collab"})
 
@@ -89,7 +87,7 @@ print(totals)
 print("\n=== Average Streams per Song (deduped) ===")
 print(avgs)
 
-# %% DISPLAY Top lists (no double counting)
+#3.2) Top lists (no double counting)
 top_solo   = df_unique[~df_unique["is_collaboration"]].sort_values("stream", ascending=False).head(10)
 top_collab = df_unique[df_unique["is_collaboration"]].sort_values("stream", ascending=False).head(10)
 
@@ -99,7 +97,7 @@ print(top_solo[["artist","track","stream"]])
 print("\n=== Top 10 Collaboration Songs ===")
 print(top_collab[["artist","track","stream"]])
 
-# %% DISPLAY % of collaborations in Top 100
+# 3.3) collaborations in Top 100
 top100 = df_unique.sort_values("stream", ascending=False).head(100)
 share_collab = (top100["is_collaboration"].mean()*100)
 print(f"\n% Collaborations in Top 100 (deduped): {share_collab:.1f}%")
@@ -115,7 +113,6 @@ print(" Correlation b/w  audio features and popularity \n" , audio_and_popularit
 #
 
 #5. Happy vs Sad songs
-# %% Sad vs Happy Songs Comparison
 
 # Combine back; this preserves ALL columns (valence, danceability, etc.)
 df_unique = pd.concat([solo_unique, collab_unique], ignore_index=True)
@@ -131,27 +128,27 @@ df_unique['mood'] = pd.cut(
     labels=['Sad','Neutral','Happy']
 )
 
-# count how many songs fall into each mood
+# 5.1) count how many songs fall into each mood
 print("Song distribution by mood:")
 print(df_unique['mood'].value_counts())
 
-# average streams by mood
+# 5.2) average streams by mood
 avg_streams_mood = df_unique.groupby('mood')['stream'].mean().sort_values(ascending=False)
 print("\nAverage Streams by Mood:")
 print(avg_streams_mood)
 
-# total streams by mood
+# 5.3) total streams by mood
 tot_streams_mood = df_unique.groupby('mood')['stream'].sum().sort_values(ascending=False)
 print("\nTotal Streams by Mood:")
 print(tot_streams_mood)
 
-# Top 10 Happy songs
+# 5.4) Top 10 Happy songs
 top_happy = df_unique[df_unique['mood']=='Happy'] \
     .sort_values('stream', ascending=False).head(10)
 print("\nTop 10 Happy Songs:")
 print(top_happy[['artist','track','valence','stream']])
 
-# Top 10 Sad songs
+# 5.5) Top 10 Sad songs
 top_sad = df_unique[df_unique['mood']=='Sad'] \
     .sort_values('stream', ascending=False).head(10)
 print("\nTop 10 Sad Songs:")

@@ -55,13 +55,13 @@ To answer the question: **What makes a song popular?**
 - **Audio features:** Popularity weakly correlated with danceability (r ≈ 0.07) and energy (r ≈ 0.06), suggesting **song mood/artist brand matters more than raw features**.  
 
 ### Mood vs Popularity
-![Mood vs Popularity](images/mood_vs_popularity.png)
+![Mood vs Popularity](images/Mood_vs _Pop.png)
 
 ### Solo vs Collaboration
-![Solo vs Collaboration](images/solo_vs_collab.png)
+![Solo vs Collaboration](images/Solo_vs_Collab_Popularity.png)
 
 ### Top 10 Artists
-![Top 10 Artists](images/top10_artists.png)
+![Top 10 Artists](images/Top_10_Artists_vs_Pop.png)
 
 
 ---

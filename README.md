@@ -54,7 +54,15 @@ To answer the question: **What makes a song popular?**
   - *Blinding Lights* and *Shape of You* dominate Spotify (3B+ streams).  
 - **Audio features:** Popularity weakly correlated with danceability (r ≈ 0.07) and energy (r ≈ 0.06), suggesting **song mood/artist brand matters more than raw features**.  
 
- *(Insert top figure)*  
+### Mood vs Popularity
+![Mood vs Popularity](images/mood_vs_popularity.png)
+
+### Solo vs Collaboration
+![Solo vs Collaboration](images/solo_vs_collab.png)
+
+### Top 10 Artists
+![Top 10 Artists](images/top10_artists.png)
+
 
 ---
 
